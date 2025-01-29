@@ -75,6 +75,12 @@ jobs:
         run: |
           docker push ${{ steps.meta.outputs.tags }}
 
+      # Get the digest of the pushed image
+      - name: Get image digest
+        id: get-digest
+        run: |
+          echo "DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.tags }})" >> $GITHUB_ENV
+
       # Sign the resulting Docker image digest except on PRs.
       # This will only write to the public Rekor transparency log when the Docker
       # repository is public to avoid leaking data.  If you would like to publish
